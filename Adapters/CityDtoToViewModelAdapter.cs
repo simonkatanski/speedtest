@@ -28,34 +28,33 @@ namespace Test.Adapters
 
         public IEnumerable<CityViewModel> ParallelForEachManualMap(IEnumerable<CityDto> cities)
         {
-            var count = cities.Count();
-            var list = new CityViewModel[count];
+            var citiesArray = cities.ToArray();
+            var resultList = new CityViewModel[citiesArray.Length];
 
-            var rangePartitioner = Partitioner.Create(0, cities.Count());
-
+            var rangePartitioner = Partitioner.Create(0, citiesArray.Length);
             Parallel.ForEach(rangePartitioner, (range, loopState) =>
             {   
                 for (int i = range.Item1; i < range.Item2; i++)
                 {
                     var cityViewModel = new CityViewModel
                     {
-                        Country = cities.ElementAt(i).Country,
-                        EstablishedIn = cities.ElementAt(i).EstablishedIn,
-                        Mayor = cities.ElementAt(i).Mayor,
-                        Name = cities.ElementAt(i).Name,
-                        Population = cities.ElementAt(i).Population,
-                        Voivodship = cities.ElementAt(i).Voivodship
+                        Country = citiesArray[i].Country,
+                        EstablishedIn = citiesArray[i].EstablishedIn,
+                        Mayor = citiesArray[i].Mayor,
+                        Name = citiesArray[i].Name,
+                        Population = citiesArray[i].Population,
+                        Voivodship = citiesArray[i].Voivodship
                     };
-                    list[i] = cityViewModel;                   
+                    resultList[i] = cityViewModel;                   
                 }
             });
 
-            return list;       
+            return resultList;       
         }
 
         public IEnumerable<TOut> ExpressionMap<TIn, TOut>(IEnumerable<TIn> sourceCollection) where TOut : new()
         {
-            var outputList = new List<TOut>();
+            var outputList = new List<TOut>(sourceCollection.Count());
             foreach (var item in sourceCollection)
             {
                 outputList.Add(ILMapper.ExpressionMap<TIn, TOut>(item));
@@ -65,7 +64,7 @@ namespace Test.Adapters
 
         public IEnumerable<TOut> ILMap<TIn, TOut>(IEnumerable<TIn> sourceCollection) where TOut : new()
         {
-            var outputList = new List<TOut>();
+            var outputList = new List<TOut>(sourceCollection.Count());
             foreach(var item in sourceCollection)
             {
                 outputList.Add(ILMapper.ILMap<TIn, TOut>(item));
@@ -75,7 +74,7 @@ namespace Test.Adapters
 
         public IEnumerable<TOut> ReflectionOrderedPropertiesCopy<TIn, TOut>(IEnumerable<TIn> sourceCollection) where TOut : new()
         {
-            var destinationList = new List<TOut>();
+            var destinationList = new List<TOut>(sourceCollection.Count());
             var sourcePropertiesCollection = typeof(TIn).GetProperties().OrderBy(p => p.Name).ToArray();
             var destinationPropertiesCollection = typeof(TOut).GetProperties().OrderBy(p => p.Name).ToArray();
             var itemsCount = sourcePropertiesCollection.Length;
@@ -94,9 +93,9 @@ namespace Test.Adapters
 
         public IEnumerable<TOut> ReflectionPropertySearchCopy<TIn, TOut>(IEnumerable<TIn> sourceCollection) where TOut : new()
         {
-            var destinationList = new List<TOut>();
-            var sourcePropertiesCollection = typeof(TIn).GetProperties().ToList();
-            var destinationPropertiesCollection = typeof(TOut).GetProperties().ToList();
+            var destinationList = new List<TOut>(sourceCollection.Count());
+            var sourcePropertiesCollection = typeof(TIn).GetProperties();
+            var destinationPropertiesCollection = typeof(TOut).GetProperties();
 
             foreach (var collectionItem in sourceCollection)
             {
@@ -113,30 +112,29 @@ namespace Test.Adapters
             return destinationList;
         }
 
-        public IEnumerable<CityViewModel> ManualForMap(IEnumerable<CityDto> cities)
+        public IEnumerable<CityViewModel> ManualForArrayMap(CityDto[] cities)
         {
-            var list = new List<CityViewModel>();
-            var citiesArray = cities.ToArray();
-            for (int i = 0; i < citiesArray.Count(); i++)
+            var citiesArray = new CityViewModel[cities.Length];            
+            for (int i = 0; i < cities.Length; i++)
             {
                 var newCity = new CityViewModel
                 {
-                    Country = citiesArray[i].Country,
-                    EstablishedIn = citiesArray[i].EstablishedIn,
-                    Mayor = citiesArray[i].Mayor,
-                    Name = citiesArray[i].Name,
-                    Population = citiesArray[i].Population,
-                    Voivodship = citiesArray[i].Voivodship
+                    Country = cities[i].Country,
+                    EstablishedIn = cities[i].EstablishedIn,
+                    Mayor = cities[i].Mayor,
+                    Name = cities[i].Name,
+                    Population = cities[i].Population,
+                    Voivodship = cities[i].Voivodship
                 };
-                list.Add(newCity);
+                citiesArray[i] = newCity;
             }
 
-            return list;
+            return citiesArray;
         }
 
         public IEnumerable<CityViewModel> ManualMap(IEnumerable<CityDto> cities)
         {
-            var list = new List<CityViewModel>();
+            var list = new List<CityViewModel>(cities.Count());
             foreach (var city in cities)
             {
                 var newCity = new CityViewModel
@@ -169,7 +167,7 @@ namespace Test.Adapters
 
         public IEnumerable<CityViewModel> AutoMapperMap(IEnumerable<CityDto> cities)
         {
-            var list = new List<CityViewModel>();
+            var list = new List<CityViewModel>(cities.Count());
             foreach (var city in cities)
             {
                 list.Add(Mapper.Map<CityViewModel>(city));

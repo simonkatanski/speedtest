@@ -154,6 +154,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\ICityDtoToCityViewModelAdapter.cs" />
     <Compile Include="Benchmarks\AdapterBenchmarks.cs" />
     <Compile Include="CityDto.cs" />
     <Compile Include="CityViewModel.cs" />

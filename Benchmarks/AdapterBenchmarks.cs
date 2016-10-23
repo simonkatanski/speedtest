@@ -10,6 +10,7 @@ namespace Test.Benchmarks
     {
         private ICityDtoToCityViewModelAdapter _adapter;
         private IEnumerable<CityDto> _citiesToTest;
+        private CityDto[] _citiesToTestArray;
 
         [Params(50, 250, 500, 1000, 2500, 5000, 10000, 15000, 25000, 50000, 75000, 100000, 150000)]
         public int DtosCount { get; set; }
@@ -18,7 +19,8 @@ namespace Test.Benchmarks
         public void Setup()
         {
             _citiesToTest = DataSource.GetCitiesDtos(DtosCount);
-            _adapter = new CityDtoToCityViewModelAdapter();            
+            _adapter = new CityDtoToCityViewModelAdapter();
+            _citiesToTestArray = _citiesToTest.ToArray();
         }
 
         [Benchmark]
@@ -30,7 +32,7 @@ namespace Test.Benchmarks
         [Benchmark]
         public IEnumerable<CityViewModel> ManualForMap()
         {
-            return _adapter.ManualForMap(_citiesToTest).ToList();
+            return _adapter.ManualForArrayMap(_citiesToTestArray).ToList();
         }
 
         [Benchmark]

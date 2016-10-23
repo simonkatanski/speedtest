@@ -16,7 +16,7 @@ namespace Test.Adapters
 
         IEnumerable<TOut> ReflectionPropertySearchCopy<TIn, TOut>(IEnumerable<TIn> sourceCollection) where TOut : new();
 
-        IEnumerable<CityViewModel> ManualForMap(IEnumerable<CityDto> cities);
+        IEnumerable<CityViewModel> ManualForArrayMap(CityDto[] cities);
 
         IEnumerable<CityViewModel> ManualMap(IEnumerable<CityDto> cities);
 
